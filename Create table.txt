@@ -1,0 +1,134 @@
+------------------------------------------------------------------Product_table-----------------------------------------------------------------
+
+drop table if exists Product_table;
+
+create table Products_table(
+
+   id int Generated always as identity primary key,
+   name varchar(100),
+   price float,
+   release_date date
+
+);
+
+
+
+insert  into Products_table
+values(default,'iphone 15',800,to_date('22-08-2023','dd-mm-yyyy'));
+
+insert  into Products_table
+values (default,'Macbook pro',2100,to_date('12-10-2022','dd-mm-yyyy'));
+
+insert  into Products_table
+values (default,'Apple watch',550,to_date('04-09-2022','dd-mm-yyyy'));
+
+insert  into Products_table
+values (default,'ipad',400,to_date('25-08-2020','dd-mm-yyyy'));
+
+insert  into Products_table
+values (default,'Airpods',420,to_date('30-03-2024','dd-mm-yyyy'));
+
+select * from Products_table;
+
+-------------------------------------------------------------- Customers Table--------------------------------------------------------------
+
+drop table if exists Customer_table;
+
+create table Customer_table(
+   
+ id int generated always as identity primary key,
+ name varchar(100),
+ email  varchar(30)
+ 
+)
+
+insert into Customer_table(id,name,email)
+values (default,'Meghan Harley','mharley@demo.com')
+
+
+insert into Customer_table(id,name,email)
+values (default,'Rosa Chen','rchan@demo.com')
+
+insert into Customer_table(id,name,email)
+values (default,'Logan Short','short@demo.com')
+
+insert into Customer_table(id,name,email)
+values (default,'zaria duke','zduke@demo.com')
+
+
+
+
+----------------------------------------------------------------Employees Table------------------------------------------------------------
+
+create table Employees_table(
+   id int generated always as identity primary key,
+   name varchar(50)
+)
+
+
+insert into Employees_table(id,name)
+values (default,'Nina Kumari');
+
+insert into Employees_table(id,name)
+values (default,'Abrar Khan');
+
+insert into Employees_table(id,name)
+values (default,'Trene Costa')
+
+
+
+--------------------------------------------------------------------Sales Order table---------------------------------------------------------
+
+drop table if exists Sales_order_table;
+
+create table Sales_order_table(
+
+order_id int generated always as identity primary key,
+order_date date,
+Quantity int,
+Prod_id int references Products_table(id),
+status varchar(50),
+customer_id int references Customer_table(id),
+emp_id int,
+
+constraint fk_so_emp foreign key(emp_id) references Employees_table(id)
+
+)
+
+
+insert into Sales_order_table(order_id,order_date,Quantity,Prod_id,status,customer_id,emp_id)
+values (default,to_date('01-01-2024','dd-mm-yyyy'),2,1,'Completed',1,1);
+
+insert into Sales_order_table(order_id,order_date,Quantity,Prod_id,status,customer_id,emp_id)
+values (default,to_date('01-01-2024','dd-mm-yyyy'),3,1,'Pending',2,2);
+
+insert into Sales_order_table(order_id,order_date,Quantity,Prod_id,status,customer_id,emp_id)
+values (default,to_date('02-01-2024','dd-mm-yyyy'),3,1,'Completed',3,2);
+
+insert into Sales_order_table(order_id,order_date,Quantity,Prod_id,status,customer_id,emp_id)
+values (default,to_date('03-01-2024','dd-mm-yyyy'),3,1,'Completed',3,2);
+
+insert into Sales_order_table(order_id,order_date,Quantity,Prod_id,status,customer_id,emp_id)
+values (default,to_date('04-01-2024','dd-mm-yyyy'),1,1,'Completed',3,2);
+
+insert into Sales_order_table(order_id,order_date,Quantity,Prod_id,status,customer_id,emp_id)
+values (default,to_date('04-01-2024','dd-mm-yyyy'),1,1,'Completed',2,1);
+
+insert into Sales_order_table(order_id,order_date,Quantity,Prod_id,status,customer_id,emp_id)
+values (default,to_date('04-01-2024','dd-mm-yyyy'),1,2,'On Hold',2,1);
+
+insert into Sales_order_table(order_id,order_date,Quantity,Prod_id,status,customer_id,emp_id)
+values (default,to_date('05-01-2024','dd-mm-yyyy'),4,2,'Rejected',1,2);
+
+insert into Sales_order_table(order_id,order_date,Quantity,Prod_id,status,customer_id,emp_id)
+values (default,to_date('06-01-2024','dd-mm-yyyy'),5,5,'Completed',1,2);
+
+insert into Sales_order_table(order_id,order_date,Quantity,Prod_id,status,customer_id,emp_id)
+values (default,to_date('06-01-2024','dd-mm-yyyy'),1,1,'Completed',1,1);
+
+
+select * from Products_table;
+select * from Customer_table;
+select * from Employees_table;
+select * from Sales_order_table;
+

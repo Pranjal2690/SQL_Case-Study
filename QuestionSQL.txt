@@ -1,0 +1,280 @@
+select * from Products_table;
+select * from Customer_table;
+select * from Employees_table;
+select * from Sales_order_table;
+
+
+-- Ques:1)  Find the total number Of Products Sold.
+
+select sum(quantity) as Totol_Products_sold 
+from Sales_order_table;
+
+--Ques:2) Other Than Completed,Display the available delivery's status
+
+select status 
+from Sales_order_table 
+where status <> 'Completed';   --- != or <> are not equal to ooerator
+
+select status 
+from Sales_order_table 
+where status not in ('Completed','completed'); 
+
+select distinct (status)   
+from Sales_order_table 
+where status in ('Completed','completed'); 
+
+select upper('Pranjal'),lower('PRANJAL')
+
+
+select status
+from Sales_order_table
+where upper(status) not in ('COMPLETED') 
+
+--Ques:3) Display The order_id,order_date and product_name for all the completed order
+
+
+select * from Sales_order_table;
+
+select order_id,order_date,name as Product_name
+from Sales_order_table as S
+inner join Products_table as P
+on S.prod_id=P.id
+where lower(status) ='completed';
+
+-- Ques:4) Sort the above query to show the earliest order at the top.Also displays the customer who purchased these order
+
+select order_id,order_date,P.name as Product_name,C.name as Customer_name
+from Sales_order_table as S
+
+inner join Products_table as P on S.prod_id=P.id
+inner join Customer_table as C on S.Customer_id=C.id
+
+where lower(status) ='completed'
+order by (order_date) desc;
+
+
+---Ques:5) Display the total number of orders corresponding to each delivery status
+
+select * from Products_table;
+select * from Customer_table;
+select * from Employees_table;
+select * from Sales_order_table;
+
+
+select status,count(*) as Totol_orders
+from Sales_order_table 
+group by status
+
+---Ques:6) For Orders Purchasing more than 1 items, how many are still not completed
+
+
+              select count(*) as not_completed_count
+              from Sales_order_table
+              where quantity>1 and lower(status)<>'completed'
+
+
+--- Ques:7) Find the total number of order coresponding to each delivery status by ignoring the case in delivery status.
+---         Status with highest no. of orders should be at top.
+
+              
+              select lower(status),count(*) as no_of_order
+              from Sales_order_table
+              group by lower(status)
+              order by no_of_order desc 
+              
+--- Ques:8) Write a Query to identify the total products purchased by each customers.
+              
+              select C.name,sum(quantity)
+              from Sales_order_table S
+              join Customer_table C on S.customer_id=C.id
+              group by 1
+              
+--- Ques:9)  Display the total Sales and Average Sales Done by Each Customer's.
+              
+              
+             SELECT * FROM Sales_order_table;
+             SELECT * FROM Products_table;
+            
+            
+            select order_date,sum(price*Quantity) as Total_Sales, Avg(price*quantity) as Average_Sales
+            from Sales_order_table S
+            join Products_table P on S.prod_id =P.id 
+            group by 1
+            order by order_date 
+            
+         
+--- Ques:10) Dispaly the Customer name,employee name,and total sales amount of all orders which are either on hold or pending
+            
+            select C.name as Customer_name,E.name as Employee_name ,sum(price*quantity)
+            from sales_order_table S
+            join Customer_table C on S.customer_id =C.id 
+            join employees_table E on S.emp_id =E.id 
+            join products_table P on S.prod_id =P.id 
+            where S.status in ('On Hold','Pending')
+            group by 1,2
+           
+
+--- Ques:11) Fetch all the orders which are neither Completed/Pending or were handled by employee abrar.Display Employee name and all detail of order.
+            
+            
+            select E.name,S.*
+            from sales_order_table S
+            join employees_table E on S.emp_id =E.id
+            where lower(status) not in ('completed','pending') 
+            or lower( E.name) like '%abrar%'
+            
+            
+--- Ques:12) Fetch the orders which costs more than 2000 but didn't include Macbook pro. Print the total sale amount as well.
+            
+            
+             select S.*,(price*Quantity) as Total_cost
+            from sales_order_table S
+            join products_table P  on S.prod_id =P.id 
+            where (price*Quantity)>2000  and  lower(P.name) not like '%macbook%'
+            
+            
+            
+--- Ques:13) Identify the customers who have not purchased any product yet.
+            select * from sales_order_table sot 
+            
+            ------------Using Sub Query--------------
+            
+         select ct.name from customer_table ct where id not in (
+              select distinct (customer_id) from sales_order_table sot 
+        )
+        
+        
+        
+           -----------Using Join-------------
+        
+        select C.*
+        from customer_table C
+        left join sales_order_table S on C.id =S.customer_id 
+        where order_id is null;
+
+--- Ques:14) Write a Query to identify the total products purchased by each customer.
+    ----     return all customer irrespective of whether they have made a purchase or not 
+    ----     Sort the result at highest no. of order at the top.
+       
+       
+       
+       select C.name,coalesce (sum(Quantity),0) as total_products
+       from sales_order_table S
+       right join customer_table C on S.customer_id =C.id 
+       group by 1
+       order by total_products desc 
+       
+--- Ques:15) Corresponding to each employee,Display the total sales they made of all completed orders 
+  -----      Display total sales as 0 if am employee made no sales yet.
+       
+            
+            select  * from sales_order_table sot ;
+           
+           select E.name,coalesce (sum(Quantity*price),0) as total_sales
+           from sales_order_table S
+           join products_table as P on S.prod_id=P.id 
+           right join employees_table E on S.emp_id =E.id  and lower(Status) ='completed'
+           group by 1
+           order by total_sales desc 
+            
+           
+           
+--- Ques:16) Re-write the above query so as to display the total sales made by each 
+   --        employee corresponding to each customer.If an employee has not serve a customer yet 
+   --        then display "-" under the customer.
+           
+           
+           select E.name as Employee_name,coalesce (C.name,'-') as Customer_name,coalesce (sum(quantity*price),0) as total_sales
+           from sales_order_table S
+           join products_table P on S.prod_id =P.id 
+           join customer_table c on S.customer_id =C.id  
+           right join employees_table E on S.emp_id =E.id and lower(status)='completed'
+           group by 1,2
+           order by 3 desc 
+           
+           
+--- Ques:17)  Re-write the above query so as to display only those record where total sales is above 1000
+           
+           select E.name as Employee_name,coalesce (C.name,'-') as Customer_name,coalesce (sum(quantity*price),0) as total_sales
+           from sales_order_table S
+           join products_table P on S.prod_id =P.id 
+           join customer_table c on S.customer_id =C.id  
+           right join employees_table E on S.emp_id =E.id and lower(status)='completed'
+           group by 1,2
+           having coalesce(sum(quantity*price),0) >1000  -- applying the having conditions only on the grouped data
+           order by 3 desc 
+           
+           
+--- Ques:18) Identify Employee who have served more than two customers.
+           
+           select * from sales_order_table sot 
+           
+           select E.name as Employee_name, count(distinct C.name) as Customer_count
+           from sales_order_table S
+           join employees_table E on S.emp_id =E.id 
+           join customer_table C on S.customer_id =C.id 
+           group by 1
+           having count(distinct C.name)>2
+           
+           
+--- Ques:19) Identify the customers who have purchased more than 5 products
+           
+           select C.name,sum(quantity) as total_prod_count
+           from sales_order_table S
+           join customer_table C on S.customer_id =C.id 
+           --join products_table P on S.prod_id =P.id 
+           group by 1
+           having sum(quantity)>5
+           
+           
+--- Ques:20) Identify the Customer whose average purchase cost exceeds the average sale of all order
+           
+           -------------Customers Average Purchased Costs-----------------------
+           
+           select avg(Quantity*price)
+           from sales_order_table S              
+           join products_table P on S.prod_id =P.id 
+           
+           ------------Average Sale of all orders------------------------------
+            
+           select C.name,avg(quantity*price) as Average_sale_of_all_orders
+           from sales_order_table S
+           join customer_table C on S.customer_id =C.id 
+           join products_table P on S.prod_id =P.id 
+           group by 1
+           
+           
+           
+           select C.name,avg(quantity*price) as Average_sale_of_all_orders
+           from sales_order_table S
+           join customer_table C on S.customer_id =C.id 
+           join products_table P on S.prod_id =P.id 
+           group by 1
+           having avg(quantity*price) > ( select avg(Quantity*price)
+           from sales_order_table S
+           join products_table P on S.prod_id =P.id )
+           
+          
+           -- having avg(price)>avg(quantity*price)
+
+       
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
